@@ -1,4 +1,4 @@
-# mydr24-shared
+# MyDR24 (Shared)
 
 [![Crates.io](https://img.shields.io/crates/v/mydr24-shared.svg)](https://crates.io/crates/mydr24-shared)
 [![Documentation](https://docs.rs/mydr24-shared/badge.svg)](https://docs.rs/mydr24-shared)
