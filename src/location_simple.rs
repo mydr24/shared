@@ -83,9 +83,9 @@ impl SimpleLocationTracker {
                     // Show emergency notification
                     if let Some(window) = web_sys::window() {
                         let alert_msg = format!(
-                            "🚨 EMERGENCY ALERT\n\nPatient: {}\nLocation: {:?}\nCondition: {}\nContact: {}",
+                            "🚨 EMERGENCY ALERT\n\nPatient: {}\nLocation: {:.4}, {:.4}\nCondition: {}\nContact: {}",
                             alert.patient_id,
-                            alert.location.unwrap_or((0.0, 0.0)),
+                            alert.location.latitude, alert.location.longitude,
                             alert.medical_condition.as_deref().unwrap_or("Unknown"),
                             alert.emergency_contact.as_deref().unwrap_or("None provided")
                         );

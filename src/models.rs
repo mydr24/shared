@@ -48,7 +48,7 @@ pub struct Provider {
     pub updated_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Appointment {
     pub id: Uuid,
     pub patient_id: Uuid,
@@ -122,7 +122,7 @@ pub struct ConsultationFee {
     pub follow_up_discount: f64,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Prescription {
     pub medications: Vec<Medication>,
     pub instructions: String,
@@ -130,7 +130,7 @@ pub struct Prescription {
     pub digital_signature: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Medication {
     pub name: String,
     pub dosage: String,
@@ -168,7 +168,7 @@ pub enum MedicalSpecialization {
     Other(String),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum AppointmentType {
     InPerson,
     Telemedicine,
@@ -177,7 +177,7 @@ pub enum AppointmentType {
     FollowUp,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum AppointmentStatus {
     Scheduled,
     Confirmed,

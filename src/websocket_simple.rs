@@ -109,11 +109,24 @@ pub struct BookingStatusUpdate {
 pub struct EmergencyAlert {
     pub alert_id: String,
     pub patient_id: String,
-    pub location: Option<(f64, f64)>,
+    pub alert_type: String,
+    pub severity: String,
+    pub location: Location,
+    pub description: String,
+    pub timestamp: DateTime<Utc>,
+    pub status: String,
     pub medical_condition: Option<String>,
     pub emergency_contact: Option<String>,
-    pub timestamp: DateTime<Utc>,
     pub priority: String,
+}
+
+// Location structure for emergency alerts
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Location {
+    pub latitude: f64,
+    pub longitude: f64,
+    pub address: Option<String>,
+    pub timestamp: DateTime<Utc>,
 }
 
 // Chat message structure
@@ -122,9 +135,11 @@ pub struct ChatMessage {
     pub message_id: String,
     pub chat_id: String,
     pub sender_id: String,
+    pub receiver_id: String,
     pub content: String,
     pub message_type: String,
     pub timestamp: DateTime<Utc>,
+    pub is_read: bool,
     pub is_encrypted: bool,
 }
 
@@ -347,13 +362,23 @@ pub fn create_emergency_alert(
     medical_condition: Option<String>,
     emergency_contact: Option<String>,
 ) -> EmergencyAlert {
+    let (latitude, longitude) = location.unwrap_or((0.0, 0.0));
     EmergencyAlert {
         alert_id: Uuid::new_v4().to_string(),
         patient_id,
-        location,
+        alert_type: "emergency".to_string(),
+        severity: "high".to_string(),
+        location: Location {
+            latitude,
+            longitude,
+            address: None,
+            timestamp: Utc::now(),
+        },
+        description: "Emergency alert".to_string(),
+        timestamp: Utc::now(),
+        status: "active".to_string(),
         medical_condition,
         emergency_contact,
-        timestamp: Utc::now(),
         priority: "high".to_string(),
     }
 }
@@ -378,6 +403,7 @@ pub fn create_location_update(
 pub fn create_chat_message(
     chat_id: String,
     sender_id: String,
+    receiver_id: String,
     content: String,
     message_type: String,
 ) -> ChatMessage {
@@ -385,9 +411,11 @@ pub fn create_chat_message(
         message_id: Uuid::new_v4().to_string(),
         chat_id,
         sender_id,
+        receiver_id,
         content,
         message_type,
         timestamp: Utc::now(),
+        is_read: false,
         is_encrypted: false,
     }
 }

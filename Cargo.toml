@@ -2,11 +2,11 @@
 name = "mydr24-shared"
 version = "0.1.0"
 edition = "2021"
-description = "MyDR24 Shared Healthcare Library - Common types, models, UI components, and utilities for healthcare applications"
+description = "MyDR24 Shared Library - Complete healthcare platform components, models, auth, compliance, and UI"
 license = "MIT"
-repository = "https://github.com/mydr24/mydr24-shared"
-homepage = "https://github.com/mydr24/mydr24-shared"
-documentation = "https://docs.rs/mydr24-shared"
+repository = "https://github.com/mydr24/shared"
+homepage = "https://github.com/mydr24"
+documentation = "https://docs.rs/docs"
 readme = "README.md"
 keywords = ["healthcare", "leptos", "ui", "medical", "hipaa"]
 categories = ["web-programming", "gui", "api-bindings"]
@@ -21,10 +21,14 @@ chrono = { version = "0.4", features = ["serde"] }
 anyhow = "1.0"
 thiserror = "1.0"
 
-# Leptos dependencies for UI components
-leptos = { version = "0.8", features = ["csr"] }
-leptos_meta = "0.8"
-leptos_router = "0.8"
+# Random generation (with WASM support)
+rand = "0.8"
+getrandom = { version = "0.2", features = ["js"] }
+
+# Leptos dependencies for UI components (optional for backend)
+leptos = { version = "0.8", features = ["csr"], optional = true }
+leptos_meta = { version = "0.8", optional = true }
+leptos_router = { version = "0.8", optional = true }
 web-sys = { version = "0.3", features = [
     "console",
     "Window",
@@ -34,19 +38,43 @@ web-sys = { version = "0.3", features = [
     "PositionError",
     "PositionOptions",
     "Coordinates"
-] }
-wasm-bindgen = "0.2"
+], optional = true }
+wasm-bindgen = { version = "0.2", optional = true }
 
-# WebSocket and networking
-gloo-net = { version = "0.6", features = ["websocket"] }
-gloo-timers = { version = "0.3", features = ["futures"] }
-futures = "0.3"
+# WebSocket and networking (optional for backend)
+gloo-net = { version = "0.6", features = ["websocket"], optional = true }
+gloo-timers = { version = "0.3", features = ["futures"], optional = true }
+futures = { version = "0.3", optional = true }
 log = "0.4"
 base64 = "0.22"
-wasm-bindgen-futures = "0.4"
-js-sys = "0.3"
+wasm-bindgen-futures = { version = "0.4", optional = true }
+js-sys = { version = "0.3", optional = true }
 
 # Healthcare-specific dependencies
 validator = { version = "0.18", features = ["derive"] }
 strum = { version = "0.26", features = ["derive"] }
 regex = "1.0"
+
+# Backend dependencies (from mydr24-core)
+sha2 = "0.10"
+
+# Post-Quantum Cryptography (optional)
+pqcrypto-dilithium = { version = "0.3", optional = true }
+pqcrypto-traits = { version = "0.3", optional = true }
+
+# Timezone support
+chrono-tz = "0.8"
+
+[features]
+default = ["ui", "models"]
+ui = ["leptos", "leptos_meta", "leptos_router", "web-sys", "wasm-bindgen", "gloo-net", "gloo-timers", "futures", "wasm-bindgen-futures", "js-sys"]
+models = []
+auth = []
+compliance = ["healthcare-compliance"]
+healthcare-compliance = []
+post-quantum = ["pqcrypto-dilithium", "pqcrypto-traits"]
+audit-logging = []
+
+[lib]
+name = "mydr24_shared"
+path = "src/lib.rs"

@@ -82,6 +82,7 @@ impl SimpleChatManager {
         let chat_message = create_chat_message(
             chat_id.clone(),
             self.current_user_id.clone(),
+            "provider-001".to_string(), // TODO: Get actual receiver_id
             content.clone(),
             "text".to_string(),
         );
