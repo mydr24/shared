@@ -1,5 +1,5 @@
 [package]
-name = "mydr24-shared"
+name = "shared"
 version = "0.1.0"
 edition = "2021"
 description = "MyDR24 Shared Library - Complete healthcare platform components, models, auth, compliance, and UI"

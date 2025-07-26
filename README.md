@@ -1,7 +1,7 @@
 # MyDR24 (Shared)
 
-[![Crates.io](https://img.shields.io/crates/v/mydr24-shared.svg)](https://crates.io/crates/mydr24-shared)
-[![Documentation](https://docs.rs/mydr24-shared/badge.svg)](https://docs.rs/mydr24-shared)
+[![Crates.io](https://img.shields.io/crates/v/shared.svg)](https://crates.io/crates/shared)
+[![Documentation](https://docs.rs/shared/badge.svg)](https://docs.rs/shared)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 MyDR24 Shared Healthcare Library - Common types, models, UI components, and utilities for healthcare applications built with Leptos and Rust.
@@ -52,14 +52,14 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-mydr24-shared = "0.1.0"
+shared = "0.1.0"
 ```
 
 For Leptos applications, ensure you have the required features:
 
 ```toml
 [dependencies]
-mydr24-shared = { version = "0.1.0", features = ["leptos"] }
+shared = { version = "0.1.0", features = ["leptos"] }
 leptos = { version = "0.8", features = ["csr"] }
 ```
 
@@ -199,6 +199,6 @@ This software is provided as-is and should not be used as a substitute for profe
 ## Support
 
 For issues and support:
-- GitHub Issues: [mydr24/mydr24-shared/issues](https://github.com/mydr24/mydr24-shared/issues)
-- Documentation: [docs.rs/mydr24-shared](https://docs.rs/mydr24-shared)
+- GitHub Issues: [mydr24/shared/issues](https://github.com/mydr24/shared/issues)
+- Documentation: [docs.rs/shared](https://docs.rs/shared)
 - Email: dev@mydr24.com

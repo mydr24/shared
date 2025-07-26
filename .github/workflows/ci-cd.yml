@@ -201,7 +201,7 @@ jobs:
         with:
           files: lcov.info
           flags: shared-library
-          name: mydr24-shared
+          name: shared
           fail_ci_if_error: true
 
   # Documentation generation
@@ -263,7 +263,7 @@ jobs:
     
     strategy:
       matrix:
-        project: [admin-web, patient-app, provider-app, backend-api]
+        project: [admin, patient, provider, backend]
     
     steps:
       - uses: actions/checkout@v4
@@ -285,7 +285,7 @@ jobs:
         run: |
           cd ${{ matrix.project }}
           # Replace shared dependency with local path
-          sed -i 's|mydr24-shared = .*|mydr24-shared = { path = "../shared" }|' Cargo.toml
+          sed -i 's|shared = .*|shared = { path = "../shared" }|' Cargo.toml
           cargo check
           cargo test --lib
 
