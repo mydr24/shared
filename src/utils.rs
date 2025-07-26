@@ -1,7 +1,6 @@
 //! Utility functions and helpers for MyDR24 shared library
 
 use crate::errors::{SharedError, SharedResult};
-use std::collections::HashMap;
 
 /// Validation utilities for healthcare data
 pub mod validation {

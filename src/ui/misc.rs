@@ -185,7 +185,7 @@ pub fn MedicalRecordAvatar(
     #[prop(optional)] class: Option<&'static str>,
 ) -> impl IntoView {
     let patient_name = patient_name.unwrap_or_else(|| "Unknown Patient".to_string());
-    let record_id = record_id.unwrap_or_else(|| "N/A".to_string());
+    let _record_id = record_id.unwrap_or_else(|| "N/A".to_string());
     
     let initials = patient_name
         .split_whitespace()

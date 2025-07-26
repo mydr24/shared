@@ -1,3 +1,6 @@
+// MyDR24 Shared Library - Healthcare Platform Core Components
+// Configuration-driven healthcare service ecosystem with PQC security
+
 // Core modules
 pub mod models;
 pub mod errors;
@@ -6,6 +9,7 @@ pub mod auth;
 pub mod compliance;
 pub mod utils;
 pub mod events;
+pub mod healthcare_service_engine; // Healthcare business logic and service configurations
 
 // UI modules (feature-gated for frontend)
 #[cfg(feature = "ui")]
@@ -27,6 +31,7 @@ pub use auth::*;
 pub use compliance::*;
 pub use utils::*;
 pub use events::*;
+pub use healthcare_service_engine::*; // Re-export healthcare service engine components
 
 #[cfg(feature = "ui")]
 pub use ui::*;

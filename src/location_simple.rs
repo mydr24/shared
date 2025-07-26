@@ -74,7 +74,7 @@ impl SimpleLocationTracker {
     pub fn set_websocket_client(&mut self, client: SimpleWebSocketClient) {
         // Register for emergency alerts
         client.on_message(MessageType::EmergencyAlert, {
-            let provider_id = self.provider_id.clone();
+            let _provider_id = self.provider_id.clone();
             move |message| {
                 console::log_1(&"🚨 EMERGENCY ALERT RECEIVED".into());
                 if let Ok(alert) = serde_json::from_value::<EmergencyAlert>(message.payload) {
@@ -115,8 +115,8 @@ impl SimpleLocationTracker {
         self.set_status(ProviderStatus::Available);
         
         // Start periodic location updates
-        let provider_id = self.provider_id.clone();
-        let ws_client = self.websocket_client.as_ref()
+        let _provider_id = self.provider_id.clone();
+        let _ws_client = self.websocket_client.as_ref()
             .ok_or("WebSocket client not set")?;
         
         // Get initial location
