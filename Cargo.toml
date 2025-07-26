@@ -1,0 +1,52 @@
+[package]
+name = "mydr24-shared"
+version = "0.1.0"
+edition = "2021"
+description = "MyDR24 Shared Healthcare Library - Common types, models, UI components, and utilities for healthcare applications"
+license = "MIT"
+repository = "https://github.com/mydr24/mydr24-shared"
+homepage = "https://github.com/mydr24/mydr24-shared"
+documentation = "https://docs.rs/mydr24-shared"
+readme = "README.md"
+keywords = ["healthcare", "leptos", "ui", "medical", "hipaa"]
+categories = ["web-programming", "gui", "api-bindings"]
+authors = ["MyDR24 Team <dev@mydr24.com>"]
+
+[dependencies]
+# Core dependencies
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+uuid = { version = "1.0", features = ["v4", "serde", "js"] }
+chrono = { version = "0.4", features = ["serde"] }
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Leptos dependencies for UI components
+leptos = { version = "0.8", features = ["csr"] }
+leptos_meta = "0.8"
+leptos_router = "0.8"
+web-sys = { version = "0.3", features = [
+    "console",
+    "Window",
+    "Navigator",
+    "Geolocation",
+    "Position",
+    "PositionError",
+    "PositionOptions",
+    "Coordinates"
+] }
+wasm-bindgen = "0.2"
+
+# WebSocket and networking
+gloo-net = { version = "0.6", features = ["websocket"] }
+gloo-timers = { version = "0.3", features = ["futures"] }
+futures = "0.3"
+log = "0.4"
+base64 = "0.22"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+
+# Healthcare-specific dependencies
+validator = { version = "0.18", features = ["derive"] }
+strum = { version = "0.26", features = ["derive"] }
+regex = "1.0"

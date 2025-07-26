@@ -1,0 +1,425 @@
+name: MyDR24 Shared Library - CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  release:
+    types: [published]
+
+jobs:
+  test:
+    name: Test & Build
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        rust: [stable, beta]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
+          override: true
+          components: rustfmt, clippy
+
+      - name: Cache cargo
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-${{ matrix.rust }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Check formatting
+        run: cargo fmt -- --check
+
+      - name: Lint
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Test
+        run: cargo test --verbose --all-features
+
+      - name: Test WASM compatibility
+        run: |
+          rustup target add wasm32-unknown-unknown
+          cargo check --target wasm32-unknown-unknown --all-features
+
+      - name: Build documentation
+        run: cargo doc --no-deps --all-features
+
+  # Healthcare Compliance Tests
+  compliance:
+    name: Healthcare Compliance
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          
+      - name: HIPAA Compliance Tests
+        run: |
+          echo "🏥 Running HIPAA compliance tests..."
+          cargo test --test hipaa_compliance --features healthcare
+        
+      - name: GDPR Compliance Tests
+        run: |
+          echo "🇪🇺 Running GDPR compliance tests..."
+          cargo test --test gdpr_compliance --features privacy
+        
+      - name: NMC/MCI Compliance Tests (India)
+        run: |
+          echo "🇮🇳 Running NMC/MCI compliance tests..."
+          cargo test --test nmc_compliance --features indian-healthcare
+        
+      - name: Security Tests
+        run: |
+          echo "🔒 Running security tests..."
+          cargo test --test security --features crypto
+          
+      - name: Post-Quantum Cryptography Tests
+        run: |
+          echo "🔐 Running post-quantum cryptography tests..."
+          cargo test --test pqc_tests --features post-quantum
+
+  # Cross-platform compatibility
+  compatibility:
+    name: Cross-Platform Compatibility
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          
+      - name: Install cross-compilation targets
+        run: |
+          rustup target add wasm32-unknown-unknown
+          rustup target add x86_64-pc-windows-gnu
+          rustup target add aarch64-apple-darwin
+          rustup target add aarch64-unknown-linux-gnu
+          
+      - name: Test WASM build
+        run: cargo build --target wasm32-unknown-unknown --features wasm
+        
+      - name: Test Windows build
+        run: cargo build --target x86_64-pc-windows-gnu --features desktop
+        
+      - name: Test ARM64 Linux build
+        run: cargo build --target aarch64-unknown-linux-gnu --features mobile
+        
+      - name: Test iOS compatibility
+        run: |
+          rustup target add aarch64-apple-ios
+          cargo check --target aarch64-apple-ios --features mobile
+          
+      - name: Test Android compatibility
+        run: |
+          rustup target add aarch64-linux-android
+          cargo check --target aarch64-linux-android --features mobile
+
+  # Security audit
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          
+      - name: Security audit
+        uses: actions-rs/audit-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Healthcare data encryption tests
+        run: |
+          echo "🔐 Testing healthcare data encryption..."
+          cargo test --test encryption_tests --features crypto
+          
+      - name: Patient data privacy tests
+        run: |
+          echo "🔒 Testing patient data privacy..."
+          cargo test --test privacy_tests --features privacy
+
+  # Performance benchmarks
+  benchmarks:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          
+      - name: Run benchmarks
+        run: |
+          cargo bench --bench healthcare_benchmarks
+          cargo bench --bench crypto_benchmarks
+          cargo bench --bench ui_benchmarks
+          
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark-results
+          path: target/criterion/
+
+  # Code coverage
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: llvm-tools-preview
+          
+      - name: Install cargo-llvm-cov
+        run: cargo install cargo-llvm-cov
+        
+      - name: Generate coverage report
+        run: |
+          cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
+          
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: lcov.info
+          flags: shared-library
+          name: mydr24-shared
+          fail_ci_if_error: true
+
+  # Documentation generation
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          
+      - name: Build documentation
+        run: |
+          cargo doc --no-deps --all-features --document-private-items
+          
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/doc
+          destination_dir: docs
+
+  # Publish to crates.io
+  publish:
+    name: Publish to Crates.io
+    runs-on: ubuntu-latest
+    needs: [test, compliance, security, compatibility]
+    if: github.event_name == 'release'
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          
+      - name: Verify version matches tag
+        run: |
+          CARGO_VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          if [ "$CARGO_VERSION" != "$TAG_VERSION" ]; then
+            echo "Version mismatch: Cargo.toml has $CARGO_VERSION, tag is $TAG_VERSION"
+            exit 1
+          fi
+          
+      - name: Publish to crates.io
+        run: |
+          echo "📦 Publishing MyDR24 shared library to crates.io..."
+          cargo publish --token ${{ secrets.CRATES_IO_TOKEN }}
+
+  # Integration tests with dependent projects
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: test
+    
+    strategy:
+      matrix:
+        project: [admin-web, patient-app, provider-app, backend-api]
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: mydr24/${{ matrix.project }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ matrix.project }}
+          
+      - uses: actions/checkout@v4
+        with:
+          path: shared
+          
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          
+      - name: Test integration with ${{ matrix.project }}
+        run: |
+          cd ${{ matrix.project }}
+          # Replace shared dependency with local path
+          sed -i 's|mydr24-shared = .*|mydr24-shared = { path = "../shared" }|' Cargo.toml
+          cargo check
+          cargo test --lib
+
+  # Healthcare standards validation
+  healthcare-standards:
+    name: Healthcare Standards Validation
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          
+      - name: HL7 FHIR Compatibility Tests
+        run: |
+          echo "🏥 Testing HL7 FHIR compatibility..."
+          cargo test --test fhir_compatibility --features fhir
+          
+      - name: ICD-10 Code Validation
+        run: |
+          echo "📋 Testing ICD-10 code validation..."
+          cargo test --test icd10_validation --features medical-codes
+          
+      - name: DICOM Standard Compliance
+        run: |
+          echo "🩻 Testing DICOM standard compliance..."
+          cargo test --test dicom_compliance --features medical-imaging
+          
+      - name: Medical Device Integration Standards
+        run: |
+          echo "🔬 Testing medical device standards..."
+          cargo test --test device_standards --features medical-devices
+
+  # Multi-language bindings
+  bindings:
+    name: Language Bindings
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Generate Python bindings
+        run: |
+          pip install maturin
+          maturin build --features python-bindings
+          
+      - name: Generate JavaScript bindings
+        run: |
+          wasm-pack build --target nodejs --out-dir pkg-node --features js-bindings
+          wasm-pack build --target web --out-dir pkg-web --features js-bindings
+          
+      - name: Test Python bindings
+        run: |
+          pip install target/wheels/*.whl
+          python -c "import mydr24_shared; print('Python bindings work!')"
+          
+      - name: Test JavaScript bindings
+        run: |
+          cd pkg-node
+          npm test
+
+  # Release automation
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [test, compliance, security, compatibility, healthcare-standards]
+    if: github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[release]')
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Get version from Cargo.toml
+        id: version
+        run: |
+          VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+          echo "version=v$VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Generate changelog
+        run: |
+          echo "# MyDR24 Shared Library ${{ steps.version.outputs.version }}" > RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "## Healthcare Features" >> RELEASE_NOTES.md
+          git log --oneline --grep="feat:" --grep="fix:" --grep="healthcare:" --since="$(git describe --tags --abbrev=0)" >> RELEASE_NOTES.md
+          
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          release_name: MyDR24 Shared Library ${{ steps.version.outputs.version }}
+          body_path: RELEASE_NOTES.md
+          draft: false
+          prerelease: false
+
+  # Notification
+  notify:
+    name: Notify Team
+    runs-on: ubuntu-latest
+    needs: [test, compliance, security, compatibility]
+    if: always()
+    
+    steps:
+      - name: Notify Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: '#shared-library'
+          text: |
+            🏥 MyDR24 Shared Library CI/CD Status: ${{ job.status }}
+            
+            ✅ Tests: ${{ needs.test.result }}
+            🏥 Healthcare Compliance: ${{ needs.compliance.result }}
+            🔒 Security: ${{ needs.security.result }}
+            🌐 Cross-Platform: ${{ needs.compatibility.result }}
+            
+            Ready for healthcare applications! 💊
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()

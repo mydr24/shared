@@ -1,0 +1,431 @@
+/* MyDR24 Healthcare Platform - shadcn-inspired Design System */
+/* Comprehensive CSS variables and utility classes for healthcare applications */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Healthcare-focused color palette */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    
+    /* Primary colors - Medical Blue */
+    --primary: 210 100% 50%;
+    --primary-foreground: 210 40% 98%;
+    
+    /* Secondary colors */
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    
+    /* Muted colors */
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    /* Accent colors */
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    
+    /* Destructive colors */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    
+    /* Border and input colors */
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 210 100% 50%;
+    
+    /* Healthcare-specific status colors */
+    --emergency: 0 84% 60%;
+    --urgent: 25 95% 55%;
+    --normal: 210 100% 50%;
+    --low-priority: 160 60% 45%;
+    --success: 142 76% 36%;
+    --warning: 48 96% 53%;
+    --info: 210 100% 50%;
+    
+    /* Chart colors for healthcare analytics */
+    --chart-1: 210 100% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 95% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    
+    /* Radius */
+    --radius: 0.5rem;
+    
+    /* Typography */
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+  }
+  
+  /* Healthcare-specific base styles */
+  .healthcare-container {
+    @apply min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50;
+  }
+  
+  .medical-card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow;
+  }
+  
+  .emergency-glow {
+    @apply animate-pulse ring-2 ring-red-500 ring-opacity-75;
+  }
+  
+  .priority-high {
+    @apply border-l-4 border-red-500 bg-red-50;
+  }
+  
+  .priority-medium {
+    @apply border-l-4 border-yellow-500 bg-yellow-50;
+  }
+  
+  .priority-low {
+    @apply border-l-4 border-green-500 bg-green-50;
+  }
+}
+
+@layer components {
+  /* Button variants with healthcare theming */
+  .btn-emergency {
+    @apply bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md 
+           border-2 border-red-800 shadow-lg animate-pulse focus:ring-2 focus:ring-red-500 
+           focus:ring-offset-2 transition-all duration-200;
+  }
+  
+  .btn-medical {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md 
+           shadow-md focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200;
+  }
+  
+  .btn-success {
+    @apply bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md 
+           shadow-md focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200;
+  }
+  
+  /* Input variants with healthcare validation */
+  .input-medical {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+           focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+           placeholder-gray-400 text-gray-900 bg-white;
+  }
+  
+  .input-error {
+    @apply border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50;
+  }
+  
+  .input-success {
+    @apply border-green-500 focus:ring-green-500 focus:border-green-500 bg-green-50;
+  }
+  
+  /* Card variants for different healthcare contexts */
+  .card-patient {
+    @apply bg-white rounded-lg shadow-sm border border-blue-200 p-6 hover:shadow-md 
+           transition-shadow bg-gradient-to-r from-blue-50 to-white;
+  }
+  
+  .card-provider {
+    @apply bg-white rounded-lg shadow-sm border border-green-200 p-6 hover:shadow-md 
+           transition-shadow bg-gradient-to-r from-green-50 to-white;
+  }
+  
+  .card-emergency {
+    @apply bg-white rounded-lg shadow-lg border-2 border-red-500 p-6 
+           bg-gradient-to-r from-red-50 to-white animate-pulse;
+  }
+  
+  .card-appointment {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-4 
+           hover:shadow-md transition-all duration-200 hover:border-blue-300;
+  }
+  
+  /* Badge variants for healthcare status */
+  .badge-emergency {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+           bg-red-100 text-red-800 border border-red-200;
+  }
+  
+  .badge-urgent {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+           bg-orange-100 text-orange-800 border border-orange-200;
+  }
+  
+  .badge-normal {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+           bg-blue-100 text-blue-800 border border-blue-200;
+  }
+  
+  .badge-low {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+           bg-green-100 text-green-800 border border-green-200;
+  }
+  
+  /* Alert variants with healthcare context */
+  .alert-medical {
+    @apply border border-blue-200 bg-blue-50 text-blue-900 p-4 rounded-md;
+  }
+  
+  .alert-emergency {
+    @apply border border-red-500 bg-red-50 text-red-900 p-4 rounded-md animate-pulse;
+  }
+  
+  .alert-success {
+    @apply border border-green-200 bg-green-50 text-green-900 p-4 rounded-md;
+  }
+  
+  .alert-warning {
+    @apply border border-yellow-200 bg-yellow-50 text-yellow-900 p-4 rounded-md;
+  }
+  
+  /* Healthcare navigation styles */
+  .nav-medical {
+    @apply bg-white shadow-sm border-b border-gray-200;
+  }
+  
+  .nav-item {
+    @apply px-3 py-2 text-sm font-medium text-gray-700 rounded-md 
+           hover:text-blue-700 hover:bg-blue-50 transition-colors duration-200;
+  }
+  
+  .nav-item-active {
+    @apply bg-blue-100 text-blue-700 font-semibold;
+  }
+  
+  /* Form styles for healthcare data entry */
+  .form-medical {
+    @apply space-y-6 bg-white p-6 rounded-lg shadow-sm border border-gray-200;
+  }
+  
+  .form-group {
+    @apply space-y-2;
+  }
+  
+  .form-label {
+    @apply block text-sm font-medium text-gray-700;
+  }
+  
+  .form-error {
+    @apply text-sm text-red-600 mt-1;
+  }
+  
+  .form-help {
+    @apply text-sm text-gray-500 mt-1;
+  }
+  
+  /* Table styles for healthcare data */
+  .table-medical {
+    @apply min-w-full divide-y divide-gray-200 bg-white shadow-sm rounded-lg overflow-hidden;
+  }
+  
+  .table-header {
+    @apply bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+  }
+  
+  .table-cell {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
+  }
+  
+  .table-row {
+    @apply hover:bg-gray-50 transition-colors duration-200;
+  }
+  
+  /* Loading and skeleton states */
+  .skeleton {
+    @apply animate-pulse bg-gray-200 rounded;
+  }
+  
+  .loading-spinner {
+    @apply animate-spin inline-block w-4 h-4 border-2 border-current border-r-transparent 
+           rounded-full text-blue-600;
+  }
+  
+  /* Accessibility improvements */
+  .focus-visible {
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  }
+  
+  .sr-only {
+    @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+  }
+  
+  /* Healthcare-specific animations */
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  
+  .animate-heartbeat {
+    animation: heartbeat 2s ease-in-out infinite;
+  }
+  
+  @keyframes medical-pulse {
+    0%, 100% { opacity: 1; background-color: rgb(239 246 255); }
+    50% { opacity: 0.8; background-color: rgb(219 234 254); }
+  }
+  
+  .animate-medical-pulse {
+    animation: medical-pulse 3s ease-in-out infinite;
+  }
+  
+  /* Responsive healthcare layout utilities */
+  .healthcare-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+  }
+  
+  .healthcare-sidebar {
+    @apply w-64 bg-white shadow-sm border-r border-gray-200 min-h-screen;
+  }
+  
+  .healthcare-main {
+    @apply flex-1 p-6 bg-gray-50 min-h-screen;
+  }
+  
+  /* Print styles for medical documents */
+  @media print {
+    .no-print {
+      @apply hidden;
+    }
+    
+    .medical-document {
+      @apply text-black bg-white shadow-none border-none p-0;
+    }
+  }
+}
+
+@layer utilities {
+  /* Healthcare-specific utility classes */
+  .text-emergency {
+    color: hsl(var(--emergency));
+  }
+  
+  .text-urgent {
+    color: hsl(var(--urgent));
+  }
+  
+  .text-normal {
+    color: hsl(var(--normal));
+  }
+  
+  .text-low-priority {
+    color: hsl(var(--low-priority));
+  }
+  
+  .bg-emergency {
+    background-color: hsl(var(--emergency));
+  }
+  
+  .bg-urgent {
+    background-color: hsl(var(--urgent));
+  }
+  
+  .bg-normal {
+    background-color: hsl(var(--normal));
+  }
+  
+  .bg-low-priority {
+    background-color: hsl(var(--low-priority));
+  }
+  
+  .border-emergency {
+    border-color: hsl(var(--emergency));
+  }
+  
+  .border-urgent {
+    border-color: hsl(var(--urgent));
+  }
+  
+  .border-normal {
+    border-color: hsl(var(--normal));
+  }
+  
+  .border-low-priority {
+    border-color: hsl(var(--low-priority));
+  }
+  
+  /* Chart color utilities */
+  .fill-chart-1 { fill: hsl(var(--chart-1)); }
+  .fill-chart-2 { fill: hsl(var(--chart-2)); }
+  .fill-chart-3 { fill: hsl(var(--chart-3)); }
+  .fill-chart-4 { fill: hsl(var(--chart-4)); }
+  .fill-chart-5 { fill: hsl(var(--chart-5)); }
+  
+  .stroke-chart-1 { stroke: hsl(var(--chart-1)); }
+  .stroke-chart-2 { stroke: hsl(var(--chart-2)); }
+  .stroke-chart-3 { stroke: hsl(var(--chart-3)); }
+  .stroke-chart-4 { stroke: hsl(var(--chart-4)); }
+  .stroke-chart-5 { stroke: hsl(var(--chart-5)); }
+  
+  /* Safe area utilities for mobile healthcare apps */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  /* Healthcare compliance styling */
+  .hipaa-compliant {
+    @apply bg-green-50 border border-green-200 text-green-800 p-2 rounded text-xs;
+  }
+  
+  .encrypted-indicator {
+    @apply bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-xs inline-flex items-center;
+  }
+  
+  /* Medication reminder styles */
+  .medication-reminder {
+    @apply bg-orange-50 border-l-4 border-orange-400 p-4 animate-pulse;
+  }
+  
+  /* Emergency contact styles */
+  .emergency-contact {
+    @apply bg-red-50 border border-red-200 rounded-lg p-4 shadow-sm;
+  }
+}
