@@ -7,6 +7,8 @@ pub mod input;
 pub mod badge;
 pub mod alert;
 pub mod misc;
+pub mod icons;
+pub mod layout;
 
 // Re-export all components for easy usage
 pub use button::*;
@@ -15,6 +17,8 @@ pub use input::*;
 pub use badge::*;
 pub use alert::*;
 pub use misc::*;
+pub use icons::*;
+pub use layout::*;
 
 // Design system configuration
 pub struct DesignSystem {

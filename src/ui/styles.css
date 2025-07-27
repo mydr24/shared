@@ -318,6 +318,91 @@
     @apply flex-1 p-6 bg-gray-50 min-h-screen;
   }
   
+  /* Sidebar container with responsive behavior */
+  .sidebar-container {
+    @apply fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl lg:static lg:inset-0 lg:shadow-sm;
+  }
+  
+  /* Navigation styles */
+  .nav-item {
+    @apply text-gray-600 hover:text-gray-900 hover:bg-gray-100;
+  }
+  
+  .nav-item.active {
+    @apply text-blue-600 bg-blue-50;
+  }
+  
+  .nav-item-emergency {
+    @apply text-red-600 hover:text-red-700 hover:bg-red-50;
+  }
+  
+  .nav-group-header {
+    @apply text-gray-700 hover:text-gray-900 hover:bg-gray-100;
+  }
+  
+  /* Top bar styles */
+  .top-bar {
+    @apply sticky top-0 z-40;
+  }
+  
+  /* Mobile-first responsive grids */
+  .patient-mobile-grid {
+    @apply grid gap-4;
+    
+    /* Mobile - Single column, card-based layout */
+    @screen max-md {
+      @apply grid-cols-1;
+    }
+    
+    /* Tablet - Two columns for better space usage */
+    @screen md {
+      @apply grid-cols-2;
+    }
+    
+    /* Desktop - Three columns max for readability */
+    @screen lg {
+      @apply grid-cols-3 max-w-6xl mx-auto;
+    }
+  }
+  
+  .admin-grid {
+    @apply grid gap-6;
+    
+    /* Mobile - Single column */
+    @screen max-lg {
+      @apply grid-cols-1;
+    }
+    
+    /* Tablet - Two columns */
+    @screen lg {
+      @apply grid-cols-2;
+    }
+    
+    /* Desktop - Three columns */
+    @screen xl {
+      @apply grid-cols-3;
+    }
+  }
+  
+  .provider-grid {
+    @apply grid gap-6;
+    
+    /* Mobile - Single column, optimized for quick access */
+    @screen max-md {
+      @apply grid-cols-1 gap-4;
+    }
+    
+    /* Tablet - Two columns for efficiency */
+    @screen md {
+      @apply grid-cols-2;
+    }
+    
+    /* Desktop - Three columns for comprehensive view */
+    @screen lg {
+      @apply grid-cols-3;
+    }
+  }
+  
   /* Print styles for medical documents */
   @media print {
     .no-print {

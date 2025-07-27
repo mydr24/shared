@@ -3,6 +3,30 @@ use uuid::Uuid;
 use chrono::{DateTime, Utc};
 use validator::Validate;
 
+// Healthcare Service Pricing Structure
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ServicePricing {
+    pub base_cost: f64,
+    pub surge_multiplier: f64,
+    pub total_cost: f64,
+    pub provider_share: f64,
+    pub platform_fee: f64,
+    pub estimated_insurance_coverage: Option<f64>,
+}
+
+// Referral System Record
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ReferralRecord {
+    pub id: Uuid,
+    pub referrer_id: Uuid,
+    pub referred_user_id: Uuid,
+    pub service_type: String,
+    pub status: String,
+    pub points_earned: i32,
+    pub created_at: DateTime<Utc>,
+    pub completed_at: Option<DateTime<Utc>>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Validate)]
 pub struct Patient {
     pub id: Uuid,
