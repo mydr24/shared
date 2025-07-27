@@ -34,6 +34,19 @@ impl SimpleNavigationItem {
             children,
         }
     }
+    
+    pub fn provider_nav() -> Vec<Self> {
+        vec![
+            Self::link("Dashboard", "interface-dashboard", "/provider/dashboard"),
+            Self::link("Patient Queue", "user-patient", "/provider/queue"),
+            Self::link("Emergency", "emergency-alert", "/provider/emergency"),
+            Self::link("Appointments", "interface-calendar", "/provider/appointments"),
+            Self::link("Patient Records", "health-medical", "/provider/records"),
+            Self::link("Messaging", "interface-feedback", "/provider/messages"),
+            Self::link("Reports", "interface-chart", "/provider/reports"),
+            Self::link("Settings", "interface-settings", "/provider/settings"),
+        ]
+    }
 }
 
 #[component]
@@ -41,8 +54,8 @@ pub fn SimpleAppLayout(
     #[prop()] navigation_items: Vec<SimpleNavigationItem>,
     #[prop()] brand_title: String,
     #[prop()] brand_icon: String,
-    #[prop(optional)] user_name: Option<String>,
-    #[prop(optional)] user_role: Option<String>,
+    #[prop()] user_name: String,
+    #[prop()] user_role: String,
     children: Children,
 ) -> impl IntoView {
     let (is_mobile_sidebar_open, set_is_mobile_sidebar_open) = signal(false);
@@ -101,21 +114,20 @@ pub fn SimpleAppLayout(
                                 <Icon name="interface-bell".to_string() size=IconSize::Md class="text-gray-600".to_string() />
                             </button>
                             
-                            {user_name.map(|name| {
-                                let role = user_role.clone().unwrap_or_default();
-                                let initial = name.chars().next().unwrap_or('U').to_string();
+                            {
+                                let initial = user_name.chars().next().unwrap_or('U').to_string();
                                 view! {
                                     <div class="flex items-center space-x-3">
                                         <div class="text-right">
-                                            <p class="text-sm font-medium text-gray-900">{name}</p>
-                                            <p class="text-xs text-gray-500">{role}</p>
+                                            <p class="text-sm font-medium text-gray-900">{user_name.clone()}</p>
+                                            <p class="text-xs text-gray-500">{user_role.clone()}</p>
                                         </div>
                                         <div class="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center">
                                             <span class="text-white text-sm font-bold">{initial}</span>
                                         </div>
                                     </div>
                                 }
-                            })}
+                            }
                         </div>
                     </div>
                 </header>
