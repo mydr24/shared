@@ -68,7 +68,7 @@ leptos = { version = "0.8", features = ["csr"] }
 ### Basic Models
 
 ```rust
-use mydr24_shared::{Patient, Provider, PatientStatus};
+use shared::{Patient, Provider, PatientStatus};
 
 // Create a patient record
 let patient = Patient {
@@ -83,7 +83,7 @@ let patient = Patient {
 
 ```rust
 use leptos::*;
-use mydr24_shared::ui::{Button, ButtonVariant, EmergencyButton};
+use shared::ui::{Button, ButtonVariant, EmergencyButton};
 
 #[component]
 fn HealthcareApp() -> impl IntoView {
@@ -105,7 +105,7 @@ fn HealthcareApp() -> impl IntoView {
 ### Compliance Utilities
 
 ```rust
-use mydr24_shared::compliance::{validate_hipaa_compliance, verify_nmc_registration};
+use shared::compliance::{validate_hipaa_compliance, verify_nmc_registration};
 
 // Validate HIPAA compliance
 match validate_hipaa_compliance(&patient_data) {
@@ -124,7 +124,7 @@ match verify_nmc_registration(&provider) {
 ### WebSocket Communication
 
 ```rust
-use mydr24_shared::websocket_simple::WebSocketManager;
+use shared::websocket_simple::WebSocketManager;
 
 let ws_manager = WebSocketManager::new("wss://api.mydr24.com/ws".to_string());
 ws_manager.connect().await?;

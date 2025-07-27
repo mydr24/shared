@@ -76,5 +76,5 @@ post-quantum = ["pqcrypto-dilithium", "pqcrypto-traits"]
 audit-logging = []
 
 [lib]
-name = "mydr24_shared"
+name = "shared"
 path = "src/lib.rs"

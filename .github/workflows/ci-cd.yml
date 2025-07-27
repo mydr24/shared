@@ -356,7 +356,7 @@ jobs:
       - name: Test Python bindings
         run: |
           pip install target/wheels/*.whl
-          python -c "import mydr24_shared; print('Python bindings work!')"
+          python -c "import shared; print('Python bindings work!')"
           
       - name: Test JavaScript bindings
         run: |
