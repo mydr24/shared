@@ -2,8 +2,10 @@
 // Professional layout system with sidebar navigation and responsive design
 
 mod simple;
+// mod enhanced; // Temporarily disabled due to compilation issues
 
 pub use simple::{SimpleAppLayout, SimpleNavigationItem};
+// pub use enhanced::{HealthcareAppLayout, HealthcareNavigationItem, UserInfo}; // Temporarily disabled
 
 #[derive(Debug, Clone)]
 pub struct NavigationItem {

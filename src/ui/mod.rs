@@ -9,6 +9,7 @@ pub mod alert;
 pub mod misc;
 pub mod icons;
 pub mod layout;
+pub mod simple_healthcare;
 
 // Re-export all components for easy usage
 pub use button::*;
@@ -19,6 +20,7 @@ pub use alert::*;
 pub use misc::*;
 pub use icons::*;
 pub use layout::*;
+pub use simple_healthcare::*;
 
 // Design system configuration
 pub struct DesignSystem {
