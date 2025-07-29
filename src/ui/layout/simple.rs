@@ -47,6 +47,19 @@ impl SimpleNavigationItem {
             Self::link("Settings", "interface-settings", "/provider/settings"),
         ]
     }
+    
+    pub fn patient_nav() -> Vec<Self> {
+        vec![
+            Self::link("Dashboard", "interface-dashboard", "/patient/dashboard"),
+            Self::link("Book Appointment", "interface-calendar", "/patient/booking"),
+            Self::link("My Health Records", "health-medical", "/patient/records"),
+            Self::link("Medications", "health-pills", "/patient/medications"),
+            Self::link("Messages", "interface-feedback", "/patient/messages"),
+            Self::link("My Doctors", "user-doctor", "/patient/doctors"),
+            Self::link("Insurance", "security-certificate", "/patient/insurance"),
+            Self::link("Settings", "interface-settings", "/patient/settings"),
+        ]
+    }
 }
 
 #[component]
