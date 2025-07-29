@@ -33,10 +33,28 @@ pub struct LoginRequest {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RegisterRequest {
+    pub name: String,
+    pub email: String,
+    pub phone: String,
+    pub password: String,
+    pub date_of_birth: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LoginResponse {
     pub token: String,
     pub user: UserProfile,
     pub expires_at: String,
+}
+
+// API Error Types
+#[derive(Debug, Clone)]
+pub enum ApiError {
+    HttpError(u16),
+    NetworkError(String),
+    ParseError(String),
+    AuthError(String),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -103,6 +121,90 @@ pub struct DashboardStats {
     pub system_health: String,
 }
 
+// Admin-specific types
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AdminDashboardStats {
+    pub total_patients: u32,
+    pub active_providers: u32,
+    pub total_appointments: u32,
+    pub emergency_cases: u32,
+    pub revenue_today: f64,
+    pub system_health: String,
+    pub new_registrations_today: u32,
+    pub completed_consultations_today: u32,
+    pub pending_verifications: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AdminProvider {
+    pub id: String,
+    pub name: String,
+    pub email: String,
+    pub phone: String,
+    pub specialization: Vec<String>,
+    pub license_number: String,
+    pub verification_status: String,
+    pub rating: Option<f32>,
+    pub total_consultations: u32,
+    pub active_patients: u32,
+    pub status: String,
+    pub joined_date: String, // Using String for compatibility
+    pub last_active: Option<String>,
+    pub documents_uploaded: bool,
+    pub kyc_status: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AdminPatient {
+    pub id: String,
+    pub name: String,
+    pub email: String,
+    pub phone: String,
+    pub age: Option<u32>,
+    pub gender: Option<String>,
+    pub medical_id: Option<String>,
+    pub emergency_contact: Option<EmergencyContactInfo>,
+    pub total_consultations: u32,
+    pub last_consultation_date: Option<String>,
+    pub registered_date: String,
+    pub status: String,
+    pub insurance_status: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EmergencyContactInfo {
+    pub name: String,
+    pub phone: String,
+    pub relationship: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AdminEmergencyCase {
+    pub id: String,
+    pub patient_id: String,
+    pub patient_name: String,
+    pub emergency_type: String,
+    pub severity: String,
+    pub status: String,
+    pub location: String,
+    pub description: String,
+    pub assigned_provider_id: Option<String>,
+    pub assigned_provider_name: Option<String>,
+    pub created_at: String,
+    pub resolved_at: Option<String>,
+    pub response_time_minutes: Option<u32>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SystemHealthMetric {
+    pub component: String,
+    pub status: String,
+    pub uptime_percentage: f32,
+    pub response_time_ms: u32,
+    pub last_checked: String,
+    pub details: Option<String>,
+}
+
 // Emergency Types
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ApiEmergencyRequest {
@@ -124,6 +226,7 @@ pub struct ApiEmergencyResponse {
 }
 
 // API Client Service
+#[derive(Debug, Clone)]
 pub struct ApiClient {
     base_url: String,
     auth_token: Option<String>,
@@ -244,6 +347,154 @@ impl ApiClient {
                 .map_err(|e| format!("Parse error: {}", e))
         } else {
             Err(format!("Failed to get dashboard stats: {}", response.status()))
+        }
+    }
+
+    // Admin-specific methods
+    pub async fn get_admin_dashboard_stats(&self) -> Result<AdminDashboardStats, String> {
+        let response = self
+            .build_request("GET", "admin/dashboard/stats")
+            .send()
+            .await
+            .map_err(|e| format!("Network error: {}", e))?;
+
+        if response.ok() {
+            response
+                .json::<AdminDashboardStats>()
+                .await
+                .map_err(|e| format!("Parse error: {}", e))
+        } else {
+            Err(format!("Failed to get admin dashboard stats: {}", response.status()))
+        }
+    }
+
+    pub async fn get_admin_providers(&self) -> Result<Vec<AdminProvider>, String> {
+        let response = self
+            .build_request("GET", "admin/providers")
+            .send()
+            .await
+            .map_err(|e| format!("Network error: {}", e))?;
+
+        if response.ok() {
+            response
+                .json::<Vec<AdminProvider>>()
+                .await
+                .map_err(|e| format!("Parse error: {}", e))
+        } else {
+            Err(format!("Failed to get admin providers: {}", response.status()))
+        }
+    }
+
+    pub async fn update_provider_status(&self, provider_id: &str, status: &str) -> Result<AdminProvider, String> {
+        #[derive(Serialize)]
+        struct StatusUpdate { 
+            status: String 
+        }
+
+        let status_update = StatusUpdate { status: status.to_string() };
+        let request_result = self
+            .build_request("PUT", &format!("admin/providers/{}/status", provider_id))
+            .json(&status_update);
+
+        let request = match request_result {
+            Ok(req) => req,
+            Err(e) => return Err(format!("Failed to serialize status update: {}", e)),
+        };
+
+        let response = request
+            .send()
+            .await
+            .map_err(|e| format!("Network error: {}", e))?;
+
+        if response.ok() {
+            response
+                .json::<AdminProvider>()
+                .await
+                .map_err(|e| format!("Parse error: {}", e))
+        } else {
+            Err(format!("Failed to update provider status: {}", response.status()))
+        }
+    }
+
+    pub async fn get_admin_patients(&self) -> Result<Vec<AdminPatient>, String> {
+        let response = self
+            .build_request("GET", "admin/patients")
+            .send()
+            .await
+            .map_err(|e| format!("Network error: {}", e))?;
+
+        if response.ok() {
+            response
+                .json::<Vec<AdminPatient>>()
+                .await
+                .map_err(|e| format!("Parse error: {}", e))
+        } else {
+            Err(format!("Failed to get admin patients: {}", response.status()))
+        }
+    }
+
+    pub async fn update_patient_status(&self, patient_id: &str, status: &str) -> Result<AdminPatient, String> {
+        #[derive(Serialize)]
+        struct StatusUpdate { 
+            status: String 
+        }
+
+        let status_update = StatusUpdate { status: status.to_string() };
+        let request_result = self
+            .build_request("PUT", &format!("admin/patients/{}/status", patient_id))
+            .json(&status_update);
+
+        let request = match request_result {
+            Ok(req) => req,
+            Err(e) => return Err(format!("Failed to serialize status update: {}", e)),
+        };
+
+        let response = request
+            .send()
+            .await
+            .map_err(|e| format!("Network error: {}", e))?;
+
+        if response.ok() {
+            response
+                .json::<AdminPatient>()
+                .await
+                .map_err(|e| format!("Parse error: {}", e))
+        } else {
+            Err(format!("Failed to update patient status: {}", response.status()))
+        }
+    }
+
+    pub async fn get_admin_emergencies(&self) -> Result<Vec<AdminEmergencyCase>, String> {
+        let response = self
+            .build_request("GET", "admin/emergencies")
+            .send()
+            .await
+            .map_err(|e| format!("Network error: {}", e))?;
+
+        if response.ok() {
+            response
+                .json::<Vec<AdminEmergencyCase>>()
+                .await
+                .map_err(|e| format!("Parse error: {}", e))
+        } else {
+            Err(format!("Failed to get admin emergencies: {}", response.status()))
+        }
+    }
+
+    pub async fn get_system_health(&self) -> Result<Vec<SystemHealthMetric>, String> {
+        let response = self
+            .build_request("GET", "admin/system/health")
+            .send()
+            .await
+            .map_err(|e| format!("Network error: {}", e))?;
+
+        if response.ok() {
+            response
+                .json::<Vec<SystemHealthMetric>>()
+                .await
+                .map_err(|e| format!("Parse error: {}", e))
+        } else {
+            Err(format!("Failed to get system health: {}", response.status()))
         }
     }
 

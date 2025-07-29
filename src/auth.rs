@@ -22,7 +22,7 @@ use pqcrypto_traits::sign::{
     SignedMessage as PQSignedMessage,
 };
 
-use crate::errors::MyDR24Error;
+use crate::SharedError;
 
 /// Post-Quantum authentication structure
 #[derive(Debug, Clone)]
