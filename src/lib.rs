@@ -22,6 +22,8 @@ pub mod chat_simple;
 pub mod emergency_simple;
 #[cfg(feature = "ui")]
 pub mod location_simple;
+#[cfg(feature = "ui")]
+pub mod api_client;
 
 // Re-exports
 pub use models::*;
@@ -43,3 +45,5 @@ pub use chat_simple::*;
 pub use emergency_simple::*;
 #[cfg(feature = "ui")]
 pub use location_simple::*;
+#[cfg(feature = "ui")]
+pub use api_client::*;
