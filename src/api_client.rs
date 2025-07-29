@@ -225,6 +225,93 @@ pub struct ApiEmergencyResponse {
     pub tracking_url: Option<String>,
 }
 
+// Patient App Specific Types
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PatientAppointment {
+    pub id: String,
+    pub provider_id: String,
+    pub provider_name: String,
+    pub provider_specialization: String,
+    pub appointment_type: String, // "video", "audio", "in-person", "home-visit"
+    pub scheduled_time: String,
+    pub duration_minutes: u32,
+    pub status: String, // "scheduled", "confirmed", "in-progress", "completed", "cancelled"
+    pub meeting_link: Option<String>,
+    pub notes: Option<String>,
+    pub created_at: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BookAppointmentRequest {
+    pub provider_id: String,
+    pub appointment_type: String,
+    pub preferred_time: String,
+    pub duration_minutes: u32,
+    pub reason: String,
+    pub notes: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MedicalRecord {
+    pub id: String,
+    pub date: String,
+    pub provider_name: String,
+    pub record_type: String, // "consultation", "prescription", "lab-result", "diagnosis"
+    pub title: String,
+    pub description: String,
+    pub attachments: Vec<MedicalAttachment>,
+    pub medications: Vec<Medication>,
+    pub created_at: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MedicalAttachment {
+    pub id: String,
+    pub filename: String,
+    pub file_type: String,
+    pub file_size: u64,
+    pub download_url: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Medication {
+    pub id: String,
+    pub name: String,
+    pub dosage: String,
+    pub frequency: String,
+    pub duration: String,
+    pub instructions: String,
+    pub active: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HealthMetrics {
+    pub last_updated: String,
+    pub vital_signs: VitalSigns,
+    pub health_score: u32, // 0-100
+    pub upcoming_appointments: u32,
+    pub active_medications: u32,
+    pub recent_consultations: u32,
+    pub emergency_contacts: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct VitalSigns {
+    pub blood_pressure: Option<BloodPressure>,
+    pub heart_rate: Option<u32>,
+    pub temperature: Option<f32>,
+    pub weight: Option<f32>,
+    pub height: Option<f32>,
+    pub bmi: Option<f32>,
+    pub last_measured: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BloodPressure {
+    pub systolic: u32,
+    pub diastolic: u32,
+}
+
 // API Client Service
 #[derive(Debug, Clone)]
 pub struct ApiClient {
@@ -597,6 +684,119 @@ impl ApiClient {
                 .await
                 .unwrap_or_else(|_| "Unknown error".to_string());
             Err(format!("Emergency request failed: {}", error_text))
+        }
+    }
+
+    // Patient Registration
+    pub async fn register_patient(&self, request: RegisterRequest) -> Result<LoginResponse, String> {
+        let request_result = self
+            .build_request("POST", "auth/register/patient")
+            .json(&request);
+        
+        let request_body = match request_result {
+            Ok(req) => req,
+            Err(e) => return Err(format!("Failed to serialize registration request: {}", e)),
+        };
+        
+        let response = request_body
+            .send()
+            .await
+            .map_err(|e| format!("Network error: {}", e))?;
+
+        if response.ok() {
+            response
+                .json::<LoginResponse>()
+                .await
+                .map_err(|e| format!("Parse error: {}", e))
+        } else {
+            let error_text = response
+                .text()
+                .await
+                .unwrap_or_else(|_| "Unknown error".to_string());
+            Err(format!("Patient registration failed: {}", error_text))
+        }
+    }
+
+    // Appointment Endpoints
+    pub async fn get_patient_appointments(&self) -> Result<Vec<PatientAppointment>, String> {
+        let response = self
+            .build_request("GET", "appointments/patient")
+            .send()
+            .await
+            .map_err(|e| format!("Network error: {}", e))?;
+
+        if response.ok() {
+            response
+                .json::<Vec<PatientAppointment>>()
+                .await
+                .map_err(|e| format!("Parse error: {}", e))
+        } else {
+            Err(format!("Failed to get patient appointments: {}", response.status()))
+        }
+    }
+
+    pub async fn book_appointment(&self, request: BookAppointmentRequest) -> Result<PatientAppointment, String> {
+        let request_result = self
+            .build_request("POST", "appointments/book")
+            .json(&request);
+        
+        let request_body = match request_result {
+            Ok(req) => req,
+            Err(e) => return Err(format!("Failed to serialize booking request: {}", e)),
+        };
+        
+        let response = request_body
+            .send()
+            .await
+            .map_err(|e| format!("Network error: {}", e))?;
+
+        if response.ok() {
+            response
+                .json::<PatientAppointment>()
+                .await
+                .map_err(|e| format!("Parse error: {}", e))
+        } else {
+            let error_text = response
+                .text()
+                .await
+                .unwrap_or_else(|_| "Unknown error".to_string());
+            Err(format!("Appointment booking failed: {}", error_text))
+        }
+    }
+
+    // Medical Records
+    pub async fn get_patient_medical_records(&self) -> Result<Vec<MedicalRecord>, String> {
+        let response = self
+            .build_request("GET", "patient/medical-records")
+            .send()
+            .await
+            .map_err(|e| format!("Network error: {}", e))?;
+
+        if response.ok() {
+            response
+                .json::<Vec<MedicalRecord>>()
+                .await
+                .map_err(|e| format!("Parse error: {}", e))
+        } else {
+            Err(format!("Failed to get medical records: {}", response.status()))
+        }
+    }
+
+    // Health Metrics
+    pub async fn get_patient_health_metrics(&self) -> Result<HealthMetrics, String> {
+        let response = self
+            .build_request("GET", "patient/health-metrics")
+            .send()
+            .await
+            .map_err(|e| format!("Network error: {}", e))?;
+
+        if response.ok() {
+            response
+                .json::<HealthMetrics>()
+                .await
+                .map_err(|e| format!("Parse error: {}", e))
+        } else {
+            Err(format!("Failed to get health metrics: {}", response.status()))
         }
     }
 }
